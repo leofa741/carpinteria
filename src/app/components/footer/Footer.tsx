@@ -2,11 +2,7 @@
 
 import Link from 'next/link';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-  faFacebook,
-  faInstagram,
-
-} from '@fortawesome/free-brands-svg-icons';
+import {faInstagram} from '@fortawesome/free-brands-svg-icons';
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
@@ -70,29 +66,35 @@ const Footer = () => {
           <div>
             <h3 className="text-lg font-semibold mb-4">Síguenos</h3>
             <div className="flex space-x-4 mb-4">
-              <Link
-                href="https://www.facebook.com/profile.php?id=61568409722975 "
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="Facebook"
-              >
-                <FontAwesomeIcon icon={faFacebook} className="text-2xl hover:text-blue-500 transition" />
-              </Link>
+            
               <Link
                 href="https://www.instagram.com/buenosairestech24 "
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Instagram"
               >
-                <FontAwesomeIcon icon={faInstagram} className="text-2xl hover:text-pink-500 transition" />
+                <FontAwesomeIcon icon={faInstagram} className="text-2xl hover:text-white transition" />
               </Link>
           
             </div>
 
             <h3 className="text-lg font-semibold mt-6 mb-2">Contáctanos</h3>
             <ul className="text-sm text-gray-400 space-y-1">
-              <li>Teléfono: +54 11 5142-9072</li>
-              <li>Email: shopbsastech@gmail.com</li>
+              <li> <img
+                  src="./img/whatsapp.png"
+                  alt="WhatsApp"
+                  className="w-10 h-10 hover:opacity-80 transition"
+                />
+                <Link
+                  href="https://api.whatsapp.com/send?phone=5491134567890"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-white transition"
+                >
+                  WhatsApp
+                </Link>
+              </li>
+          
             </ul>
           </div>
         </div>
