@@ -19,7 +19,7 @@ export default function LoginForm() {
 
   const router = useRouter();
   const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get('callbackUrl') || '/shop';
+  const callbackUrl = searchParams.get('callbackUrl') || '/trabajos-realizados';
   const { data: session } = useSession();
 
   const generateCaptcha = () => {

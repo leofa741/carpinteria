@@ -1,86 +1,98 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 
-// Datos simulados de proyectos
-interface Proyecto {
-  id: number;
+interface Trabajo {
+  _id: string;
   titulo: string;
   descripcion: string;
-  imagenPrincipal: string;
   categoria: string;
+  imagenes: string[];
 }
 
-const proyectos: Proyecto[] = [
-  {
-    id: 1,
-    titulo: "Mesa de Roble Maciza",
-    descripcion: "Mesa artesanal fabricada en madera de roble macizo con acabado natural.",
-    imagenPrincipal: "/img/mesa-roble.jpg",
-    categoria: "Muebles"
-  },
-  {
-    id: 2,
-    titulo: "Armario Empotrado",
-    descripcion: "Armario a medida para espacio reducido con puertas correderas de madera.",
-    imagenPrincipal: "/img/armario.jpg",
-    categoria: "Almacenamiento"
-  },
-  {
-    id: 3,
-    titulo: "Juego de Sillas Rusticas",
-    descripcion: "Conjunto de 4 sillas hechas a mano con estilo rústico y detalles en hierro.",
-    imagenPrincipal: "/img/sillas.jpg",
-    categoria: "Sillas"
-  },
-];
-
 export default function PortfolioPage() {
+  const [trabajos, setTrabajos] = useState<Trabajo[]>([]);
+
+  useEffect(() => {
+    fetch('/api/trabajos')
+      .then(res => res.json())
+      .then(data => setTrabajos(data));
+  }, []);
+
+  const handleDelete = async (id: string) => {
+    const confirm = window.confirm('¿Estás seguro de que deseas eliminar este trabajo?');
+    if (!confirm) return;
+
+    await fetch(`/api/trabajos?id=${id}`, { method: 'DELETE' });
+    setTrabajos(prev => prev.filter(t => t._id !== id));
+  };
+
   return (
-    <main className="container mx-auto px-4 py-8">
-      <motion.h1 
+    <main className="container mx-auto px-4 py-12">
+      <motion.h1
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="text-4xl font-bold text-center mb-8"
+        className="text-4xl md:text-5xl font-semibold text-center mb-12 tracking-tight text-neutral-800"
       >
-        Nuestros Trabajos Realizados
+        Trabajos Realizados
       </motion.h1>
 
-      <motion.p 
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.3 }}
-        className="text-center mb-12 max-w-2xl mx-auto text-gray-700"
-      >
-        Aquí puedes ver algunos de los proyectos de carpintería que hemos realizado con dedicación y calidad.
-      </motion.p>
+      <div className="text-center mb-10">
+        <Link
+          href="/admin/trabajos/nuevo"
+          className="bg-black text-white px-5 py-3 rounded hover:bg-neutral-800 transition-colors"
+        >
+          + Nuevo Trabajo
+        </Link>
+      </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {proyectos.map((proyecto) => (
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-10">
+        {trabajos.map((trabajo) => (
           <motion.div
-            key={proyecto.id}
-            initial={{ opacity: 0, y: 20 }}
+            key={trabajo._id}
+            initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            className="border rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow"
+            className="bg-white rounded-2xl shadow-lg overflow-hidden border border-neutral-200"
           >
-            <Image
-              src={proyecto.imagenPrincipal}
-              alt={proyecto.titulo}
-              width={600}
-              height={400}
-              className="w-full h-56 object-cover"
-            />
-            <div className="p-4">
-              <h2 className="text-xl font-semibold">{proyecto.titulo}</h2>
-              <p className="text-sm text-gray-500 mb-2">{proyecto.categoria}</p>
-              <p className="text-gray-700 mb-4 line-clamp-2">{proyecto.descripcion}</p>
-              <Link href={`/trabajos-realizados/${proyecto.id}`} className="text-blue-600 hover:underline">
-                Ver detalles →
-              </Link>
+            <div className="overflow-x-auto whitespace-nowrap scroll-smooth no-scrollbar">
+              <div className="flex">
+                {trabajo.imagenes.map((img, index) => (
+                  <Image
+                    key={index}
+                    src={img}
+                    alt={`Imagen ${index + 1}`}
+                    width={600}
+                    height={400}
+                    className="h-64 w-auto object-cover rounded-none inline-block"
+                  />
+                ))}
+              </div>
+            </div>
+
+            <div className="p-5">
+              <h2 className="text-2xl font-medium mb-1 text-neutral-900">{trabajo.titulo}</h2>
+              <p className="text-sm text-neutral-500 mb-1">{trabajo.categoria}</p>
+              <p className="text-neutral-700 mb-4 line-clamp-3">{trabajo.descripcion}</p>
+
+              <div className="flex justify-between items-center text-sm">
+                <Link href={`/trabajos-realizados/${trabajo._id}`} className="text-blue-600 hover:underline">
+                  Ver detalles →
+                </Link>
+                <div className="flex gap-4">
+                  <Link href={`/admin/trabajos/${trabajo._id}`} 
+                  className="text-green-700 hover:underline">
+                    Editar
+                  </Link>
+                  <button onClick={() => handleDelete(trabajo._id)} className="text-red-600 hover:underline">
+                    Eliminar
+                  </button>
+                </div>
+              </div>
             </div>
           </motion.div>
         ))}

@@ -1,5 +1,4 @@
 import Banner from "./components/baner/Banner";
-import Featured from "./components/featured/Featured";
 
 import { Metadata } from "next";
 
@@ -16,31 +15,55 @@ export const metadata: Metadata = {
 export default function Home() {
   return (
     <>
-
       <div className="relative ">
-        <Banner /> 
-      
+        <Banner />
       </div>
-      {/* Sección de productos destacados */}
+  
+{/* Sección de Bienvenida Mejorada */}
+<section className="bg-[#fdfaf6] py-20">
+  <div className="container mx-auto px-6 flex flex-col-reverse md:flex-row items-center justify-between gap-12">
 
+    {/* Texto descriptivo */}
+    <div className="md:w-1/2 text-center md:text-left">
+      <h2 className="text-5xl md:text-6xl font-extrabold text-gray-900 mb-6 leading-tight">
+        Bienvenido a <span className="text-amber-700">Carpintería Rubilar</span>
+      </h2>
+      <p className="text-lg text-gray-700 mb-4 leading-relaxed">
+        Donde cada detalle importa. Creamos muebles a medida con diseños únicos y materiales de alta calidad.
+      </p>
+      <p className="text-lg text-gray-700 mb-8 leading-relaxed">
+        Transformamos espacios con piezas artesanales hechas pensando en tu estilo de vida y necesidades específicas.
+      </p>
+      <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
+        <a
+          href="/trabajos-realizados"
+          className="bg-amber-700 hover:bg-amber-800 text-white font-semibold px-6 py-3 rounded-full shadow-md transition duration-300"
+        >
+          Explorar Proyectos
+        </a>
+        <a
+          href="/contact"
+          className="bg-white hover:bg-gray-100 text-amber-700 border border-amber-700 font-semibold px-6 py-3 rounded-full shadow-md transition duration-300"
+        >
+          Solicitar Presupuesto
+        </a>
+      </div>
+    </div>
 
-      <section className="container mx-auto px-4 py-10">
-        <h2 className="text-4xl font-extrabold text-gray-900 mb-4">
-          Productos Destacados
-        </h2>
-        <p className="text-lg text-gray-700 mb-3 leading-relaxed">
-          Explora nuestra selección de productos destacados y encuentra lo último en tecnología.
-        </p>
-        <p className="text-lg text-gray-700 leading-relaxed">
-          En <span className="font-semibold text-blue-600">Bs As Tech</span>, nos enorgullece ofrecerte una experiencia de compra excepcional. Desde gadgets innovadores hasta accesorios tecnológicos de alta calidad, tenemos todo lo que necesitas para estar a la vanguardia de la tecnología.
-        </p>
-      </section>
+    {/* Imagen o ilustración */}
+    <div className="md:w-1/2 flex justify-center">
+      <img
+        src="/img/armario.jpg" // Reemplaza con una imagen real
+        alt="Muebles a medida Carpintería Rubilar"
+        className="rounded-xl shadow-xl max-w-full h-auto object-cover border-4 border-white transition-transform duration-700 hover:scale-105"
+      />
+    </div>
 
-      <Featured />
-      
+  </div>
+</section>
 
 
 
     </>
   );
-}//   www.bsastechshop.com.ar
+}

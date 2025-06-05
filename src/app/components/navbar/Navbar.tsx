@@ -240,7 +240,7 @@ export default function Navbar() {
             {/* Info usuario */}
             {session && (
               <div className="mt-4 text-sm text-gray-600 dark:text-yellow-300 font-medium px-3">
-                {role === 'admin' ? 'Administrador' : 'Usuario'}: {name}
+                {role === 'admin' ? 'Administrador' : 'Usuario'}: {email || name}
               </div>
             )}
           </div>

@@ -73,25 +73,29 @@ const Footer = () => {
                 rel="noopener noreferrer"
                 aria-label="Instagram"
               >
-                <FontAwesomeIcon icon={faInstagram} className="text-2xl hover:text-white transition" />
+               <img
+                  src="./img/instagram_1.png"
+                  alt="WhatsApp"
+                  className="w-10 h-10 hover:opacity-80 transition"
+                />
               </Link>
           
             </div>
 
             <h3 className="text-lg font-semibold mt-6 mb-2">Contáctanos</h3>
             <ul className="text-sm text-gray-400 space-y-1">
-              <li> <img
-                  src="./img/whatsapp.png"
-                  alt="WhatsApp"
-                  className="w-10 h-10 hover:opacity-80 transition"
-                />
+              <li> 
                 <Link
                   href="https://api.whatsapp.com/send?phone=5491134567890"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="hover:text-white transition"
                 >
-                  WhatsApp
+                 <img
+                  src="./img/whatsapp.png"
+                  alt="WhatsApp"
+                  className="w-10 h-10 hover:opacity-80 transition"
+                />
                 </Link>
               </li>
           
