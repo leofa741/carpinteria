@@ -4,13 +4,21 @@ import { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Image from 'next/image';
 
+type Trabajo = {
+  _id: string;
+  titulo: string;
+  imagenes: string[];
+  categoria: string;
+  descripcion: string;
+};
+
 export default function SearchResults() {
   const searchParams = useSearchParams();
-  const [products, setProducts] = useState<any[]>([]);
+  const [trabajos, setTrabajos] = useState<Trabajo[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchProducts = async () => {
+    const fetchTrabajos  = async () => {
       const query = searchParams.get('q');
 
       if (!query) {
@@ -23,7 +31,7 @@ export default function SearchResults() {
         const data = await response.json();
 
         if (response.ok) {
-          setProducts(data.products);
+          setTrabajos(data.products || []);
         } else {
           console.error('Error al buscar productos:', data.error);
         }
@@ -34,41 +42,42 @@ export default function SearchResults() {
       }
     };
 
-    fetchProducts();
+    fetchTrabajos();
   }, [searchParams]);
 
   if (loading) {
     return <p className="text-center">Cargando...</p>;
   }
 
-  if (products.length === 0) {
-    return <p className="text-center">No se encontraron productos.</p>;
+  if (trabajos.length === 0) {
+    return <p className="text-center">No se encontraron trabajos.</p>;
   }
 
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-2xl font-bold mb-6">Resultados de la búsqueda</h1>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {products.map((product) => (
-          <div
-            key={product._id}
-            className="bg-white shadow-md hover:shadow-lg transition-shadow duration-300 rounded-lg p-4"
-          >
-            <h2 className="text-lg font-semibold">{product.name}</h2>
-            <Image
-              src={product.image}
-              alt={product.name}
-              width={270}
-              height={250}
-              className="object-cover mb-4 mx-auto rounded-lg"
-              priority={true}
-              loading="eager"
-            />
-            <p className="text-gray-500">{product.category}</p>
-            <p className="text-gray-600">${product.price.toFixed(2)}</p>
-            <p className="text-sm text-gray-700">{product.description}</p>
-          </div>
-        ))}
+        {
+          trabajos.map((trabajo) => (
+            <div
+              key={trabajo._id}
+              className="bg-white shadow-md hover:shadow-lg transition-shadow duration-300 rounded-lg p-4"
+            >
+              <h2 className="text-lg font-semibold">{trabajo.titulo}</h2>
+              <Image
+                src={trabajo.imagenes[0]}
+                alt={trabajo.titulo}
+                width={270}
+                height={250}
+                className="object-cover mb-4 mx-auto rounded-lg"
+                priority={true}
+                loading="eager"
+              />
+              <p className="text-gray-500">{trabajo.categoria}</p>
+              <p className="text-gray-600">{trabajo.descripcion}</p>
+            </div>
+          ))
+        }
       </div>
     </div>
   );

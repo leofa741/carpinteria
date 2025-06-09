@@ -97,10 +97,10 @@ export default function LoginForm() {
       <div className="bg-white dark:bg-gray-800 p-8 rounded-xl shadow-lg w-full max-w-md">
         <div className="flex justify-center mb-6">
           <Image
-            src="/img/f_avicon_1.png"
+            src="/img/logo-carpinteria.webp"
             alt="Logo"
             width={50}
-            height={80}
+            height={60}
             priority
             className="h-12"
           />

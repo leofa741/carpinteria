@@ -1,9 +1,14 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
+import swal from 'sweetalert2';
+import { useSession } from 'next-auth/react';
+import { AuthContext } from '../context/AuthContext';
+
+
 
 interface Trabajo {
   _id: string;
@@ -15,7 +20,10 @@ interface Trabajo {
 
 export default function PortfolioPage() {
   const [trabajos, setTrabajos] = useState<Trabajo[]>([]);
+    const { data: session } = useSession();
+    const { userRole } = useContext(AuthContext);
 
+ const role = session?.user?.role || userRole;
   useEffect(() => {
     fetch('/api/trabajos')
       .then(res => res.json())
@@ -23,12 +31,22 @@ export default function PortfolioPage() {
   }, []);
 
   const handleDelete = async (id: string) => {
-    const confirm = window.confirm('¿Estás seguro de que deseas eliminar este trabajo?');
-    if (!confirm) return;
+    const confirm = await swal.fire({
+      title: '¿Estás seguro de que deseas eliminar este trabajo?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar'
+    });
+
+    if (!confirm.isConfirmed ) return;
 
     await fetch(`/api/trabajos?id=${id}`, { method: 'DELETE' });
     setTrabajos(prev => prev.filter(t => t._id !== id));
   };
+
+  // Verificar el rol del usuario
+
 
   return (
     <main className="container mx-auto px-4 py-12">
@@ -42,12 +60,11 @@ export default function PortfolioPage() {
       </motion.h1>
 
       <div className="text-center mb-10">
-        <Link
-          href="/admin/trabajos/nuevo"
-          className="bg-black text-white px-5 py-3 rounded hover:bg-neutral-800 transition-colors"
-        >
-          + Nuevo Trabajo
-        </Link>
+        {  role === 'admin' && (
+          <Link href="/admin/trabajos/nuevo" className="bg-blue-600 text-white px-6 py-3 rounded-lg shadow hover:bg-blue-700 transition-colors">
+            Agregar Nuevo Trabajo
+          </Link>
+        )}       
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-10">
@@ -80,17 +97,25 @@ export default function PortfolioPage() {
               <p className="text-neutral-700 mb-4 line-clamp-3">{trabajo.descripcion}</p>
 
               <div className="flex justify-between items-center text-sm">
-                <Link href={`/trabajos-realizados/${trabajo._id}`} className="text-blue-600 hover:underline">
+                <Link href={`/trabajos-realizados/${trabajo._id}`}
+                 className="text-blue-600 hover:underline">
                   Ver detalles →
                 </Link>
                 <div className="flex gap-4">
-                  <Link href={`/admin/trabajos/${trabajo._id}`} 
-                  className="text-green-700 hover:underline">
-                    Editar
-                  </Link>
-                  <button onClick={() => handleDelete(trabajo._id)} className="text-red-600 hover:underline">
-                    Eliminar
-                  </button>
+                  { role === 'admin' && (
+                    <>
+                      <Link href={`/admin/trabajos/${trabajo._id}`} className="text-blue-600 hover:underline">
+                        Editar
+                      </Link>
+                      <button
+                        onClick={() => handleDelete(trabajo._id)}
+                        className="text-red-600 hover:underline"
+                      >
+                        Eliminar
+                      </button>
+                    </>
+                  )}
+              
                 </div>
               </div>
             </div>

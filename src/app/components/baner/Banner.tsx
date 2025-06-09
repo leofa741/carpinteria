@@ -5,12 +5,12 @@ import { FaTools, FaTree, FaHandsHelping } from "react-icons/fa";
 
 function CarpinteriaBanner() {
   return (
-    <div className="relative w-full h-[450px] bg-amber-800 overflow-hidden flex items-center justify-center">
+    <div className="relative w-full h-[650px] bg-amber-800 overflow-hidden flex items-center justify-center">
       {/* Imagen de fondo de madera */}
       <Image
         src="/logo-carpinteria.png" // Imagen con textura de madera en /public
-        width={1200}
-        height={450}
+        width={1920}
+        height={650}   
         alt="Fondo Carpintería"
         className="absolute inset-0 w-full h-full object-cover opacity-40"
         priority
@@ -37,7 +37,7 @@ function CarpinteriaBanner() {
             Ver Trabajos
           </button>
           <button
-            onClick={() => window.location.href = "/contacto"}
+            onClick={() => window.location.href = "/contact"}
             className="bg-transparent border-2 border-white px-6 py-3 rounded font-semibold hover:bg-white hover:text-amber-900 transition duration-300"
           >
             Pedí tu Presupuesto

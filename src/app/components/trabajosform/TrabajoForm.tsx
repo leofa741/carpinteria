@@ -2,6 +2,7 @@
 
 import { useEffect, useState, FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
+import ImageUpload from '../imageupload/ImageUpload';
 
 interface TrabajoData {
   _id?: string;
@@ -28,7 +29,6 @@ export default function TrabajoForm({ initialData }: Props) {
   const UPLOAD_PRESET = 'preset';
   const CLOUD_NAME = 'dpooazdeg';
 
-  // 🔄 Cargar los datos iniciales si existen
   useEffect(() => {
     if (initialData) {
       setTitulo(initialData.titulo || '');
@@ -136,15 +136,12 @@ export default function TrabajoForm({ initialData }: Props) {
         required
       />
 
-      <input
-        type="file"
-        multiple
-        accept="image/*"
-        onChange={(e) => setArchivos(e.target.files)}
-        className="w-full"
+      <ImageUpload
+        initialImages={imagenes}
+        onChange={(files) => setArchivos(files)}
       />
 
-      {/* Vista previa de imágenes */}
+      {/* Vista previa de imágenes ya subidas */}
       <div className="flex flex-wrap gap-2">
         {imagenes.map((url, i) => (
           <div key={i} className="relative">

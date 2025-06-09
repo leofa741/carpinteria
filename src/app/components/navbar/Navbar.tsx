@@ -6,13 +6,11 @@ import { useState, useContext } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faBars,
-  faXmark,
-  faShoppingCart,
+  faXmark, 
   faUser,
   faBoxes
 } from '@fortawesome/free-solid-svg-icons';
 import { useSession, signOut } from 'next-auth/react';
-import { useCart } from '@/app/context/CartContext';
 import { AuthContext } from '@/app/context/AuthContext';
 import SearchBar from '../searchbar/SearchBar';
 import MobileSearchBar from '../mobilesearch/MobileSearchBar';
@@ -21,12 +19,11 @@ import { faFacebookF, faInstagram } from '@fortawesome/free-brands-svg-icons';
 export default function Navbar() {
   const { data: session } = useSession();
   const { userRole, setUserRole, userName, userEmail } = useContext(AuthContext);
-  const { getTotalItems, clearCart } = useCart();
+ 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const totalItems = getTotalItems();
+ 
 
-  const handleLogout = () => {
-    clearCart();
+  const handleLogout = () => {   
     signOut({ callbackUrl: '/' });
     localStorage.removeItem('token');
     localStorage.removeItem('purchaseData');
@@ -106,7 +103,9 @@ export default function Navbar() {
                 <FontAwesomeIcon icon={faUser} className="text-xl" />
                 <span className="text-xs lg:text-sm ml-1">Perfil</span>
               </Link>
-              <button onClick={handleLogout} className="text-xs lg:text-sm text-gray-600">
+              <button onClick={handleLogout} className="text-xs lg:text-sm text-gray-600 hover:text-red-600 transition duration-200
+              
+              ">
                 Logout
               </button>
             </>
