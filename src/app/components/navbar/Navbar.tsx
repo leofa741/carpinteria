@@ -133,15 +133,6 @@ export default function Navbar() {
               <FontAwesomeIcon icon={faInstagram} className="text-lg" />
             </a>
 
-            {/* Facebook */}
-            <a
-              href="https://www.facebook.com/profile.php?id=61568409722975&rdid=evSQkLQw3CoYc6Ax&share_url=https%3A%2F%2Fwww.facebook.com%2Fshare%2F1A4QeVXDyD%2F#"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="p-2 text-gray-800 dark:text-yellow-200 hover:text-blue-600"
-            >
-              <FontAwesomeIcon icon={faFacebookF} className="text-lg" />
-            </a>
           </div>
 
           {/* Botón menú hamburguesa */}
