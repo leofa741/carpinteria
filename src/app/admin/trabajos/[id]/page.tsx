@@ -1,9 +1,14 @@
-
 import TrabajoForm from '@/app/components/trabajosform/TrabajoForm';
 
+// Definimos los parámetros como un objeto directo (compatible con Next.js)
+type Params = {
+  params: {
+    id: string;
+  };
+};
 
+// Función para obtener el trabajo desde la API
 async function getTrabajo(id: string) {
-
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
   const res = await fetch(`${baseUrl}/api/trabajos?id=${id}`, {
     cache: 'no-store',
@@ -13,14 +18,13 @@ async function getTrabajo(id: string) {
 
   const data = await res.json();
 
-  // ✅ Asegúrate de devolver solo un objeto, no un array
-  return Array.isArray(data) ? data.find(t => t._id === id) : data;
+  // Aseguramos devolver el trabajo correcto si es un array
+  return Array.isArray(data) ? data.find((t) => t._id === id) : data;
 }
 
-export default async function EditarTrabajoPage({ params }: { params: { id: string } }) {
+// Página principal
+export default async function EditarTrabajoPage({ params }: Params) {
   const trabajo = await getTrabajo(params.id);
-
-
 
   if (!trabajo) {
     return <div className="p-8">Trabajo no encontrado</div>;
