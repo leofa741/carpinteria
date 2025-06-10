@@ -1,5 +1,11 @@
 import TrabajoForm from '@/app/components/trabajosform/TrabajoForm';
 
+type TrabajoPageParams = {
+  params: {
+    id: string;
+  };
+};
+
 async function getTrabajo(id: string) {
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
   const res = await fetch(`${baseUrl}/api/trabajos?id=${id}`, {
@@ -12,12 +18,7 @@ async function getTrabajo(id: string) {
   return Array.isArray(data) ? data.find((t) => t._id === id) : data;
 }
 
-// 👇 No pongas tipos personalizados. Esto funciona.
-export default async function Page({
-  params,
-}: {
-  params: { id: string };
-}) {
+export default async function EditarTrabajoPage({ params }: TrabajoPageParams) {
   const trabajo = await getTrabajo(params.id);
 
   if (!trabajo) {
