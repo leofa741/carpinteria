@@ -22,7 +22,7 @@ export default function EditarTrabajoPage() {
     if (id) fetchTrabajo();
   }, [id]);
 
-  if (!trabajo) return <div className="p-8">Cargando trabajo...</div>;
+  if (!trabajo) return <div className="p-8">Cargando...</div>;
 
   return (
     <main className="p-8">
