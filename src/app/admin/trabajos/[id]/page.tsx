@@ -1,11 +1,10 @@
-import { Metadata } from 'next';
 import TrabajoForm from '@/app/components/trabajosform/TrabajoForm';
 
-interface PageProps {
+type Props = {
   params: {
     id: string;
   };
-}
+};
 
 async function getTrabajo(id: string) {
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
@@ -19,7 +18,7 @@ async function getTrabajo(id: string) {
   return Array.isArray(data) ? data.find((t) => t._id === id) : data;
 }
 
-export default async function EditarTrabajoPage({ params }: PageProps) {
+export default async function EditarTrabajoPage({ params }: Props) {
   const trabajo = await getTrabajo(params.id);
 
   if (!trabajo) {
