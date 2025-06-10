@@ -1,29 +1,28 @@
+'use client';
+
+import { useEffect, useState } from 'react';
+import { useParams } from 'next/navigation';
 import TrabajoForm from '@/app/components/trabajosform/TrabajoForm';
 
-type TrabajoPageParams = {
-  params: {
-    id: string;
-  };
-};
+export default function EditarTrabajoPage() {
+  const { id } = useParams();
+  const [trabajo, setTrabajo] = useState<any>(null);
 
-async function getTrabajo(id: string) {
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
-  const res = await fetch(`${baseUrl}/api/trabajos?id=${id}`, {
-    cache: 'no-store',
-  });
+  useEffect(() => {
+    const fetchTrabajo = async () => {
+      try {
+        const res = await fetch(`/api/trabajos?id=${id}`);
+        const data = await res.json();
+        setTrabajo(Array.isArray(data) ? data.find(t => t._id === id) : data);
+      } catch (err) {
+        console.error('Error al cargar el trabajo', err);
+      }
+    };
 
-  if (!res.ok) throw new Error('No se pudo obtener el trabajo');
+    if (id) fetchTrabajo();
+  }, [id]);
 
-  const data = await res.json();
-  return Array.isArray(data) ? data.find((t) => t._id === id) : data;
-}
-
-export default async function EditarTrabajoPage({ params }: TrabajoPageParams) {
-  const trabajo = await getTrabajo(params.id);
-
-  if (!trabajo) {
-    return <div className="p-8">Trabajo no encontrado</div>;
-  }
+  if (!trabajo) return <div className="p-8">Cargando trabajo...</div>;
 
   return (
     <main className="p-8">
