@@ -1,13 +1,12 @@
 'use client';
 
-import { useContext, useEffect, useState } from 'react';
+import {  useEffect, useState } from 'react';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
 import React from 'react';
-import { useSession } from 'next-auth/react';
-import { AuthContext } from '@/app/context/AuthContext';
+
 
 interface Trabajo {
   _id: string;
@@ -32,8 +31,7 @@ export default function DetalleTrabajoPage({ params }: { params: Promise<{ id: s
   const [trabajo, setTrabajo] = useState<Trabajo | null>(null);
   const [allTrabajos, setAllTrabajos] = useState<Trabajo[]>([]);
   const [loading, setLoading] = useState(true);
-  const { data: session } = useSession();
-  const { userRole } = useContext(AuthContext);
+ 
 
   const resolvedParams = React.use(params); // Desempaquetamos params
   const { id } = resolvedParams;
@@ -80,17 +78,7 @@ export default function DetalleTrabajoPage({ params }: { params: Promise<{ id: s
     );
   }
 
-  // Verificar el rol del usuario o la sesión 
 
-  const role = session?.user?.role || userRole;
-
-  if (role !== 'admin' && role !== 'editor') {
-    return (
-      <div className="container mx-auto px-4 py-12 text-center">
-        <p>No tienes permiso para ver este trabajo.</p>
-      </div>
-    );
-  }
   
   return (
     <main className="container mx-auto px-4 py-12">

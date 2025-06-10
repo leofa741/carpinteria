@@ -58,7 +58,7 @@ export default function RootLayout({
             {children}
            {/* Botón flotante de WhatsApp */}
 <a
-  href="https://wa.me/+541151429072?text=Hola%20BsAsTech ,%20tengo%20una%20consulta%20desde%20la%20página%20web%20por%20un%20producto"
+  href="https://wa.me/+542944412756?text=Hola,%20me%20interesa%20un%20producto"
   target="_blank"
   rel="noopener noreferrer"
   className="

@@ -1,6 +1,9 @@
+
 import TrabajoForm from '@/app/components/trabajosform/TrabajoForm';
 
+
 async function getTrabajo(id: string) {
+
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
   const res = await fetch(`${baseUrl}/api/trabajos?id=${id}`, {
     cache: 'no-store',
@@ -17,7 +20,11 @@ async function getTrabajo(id: string) {
 export default async function EditarTrabajoPage({ params }: { params: { id: string } }) {
   const trabajo = await getTrabajo(params.id);
 
-  console.log('Trabajo obtenido:', trabajo);
+
+
+  if (!trabajo) {
+    return <div className="p-8">Trabajo no encontrado</div>;
+  }
 
   return (
     <main className="p-8">

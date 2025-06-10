@@ -63,23 +63,13 @@ export default function Navbar() {
 
           {/* Instagram */}
           <a
-            href="https://www.instagram.com/buenosairestech24"
+            href="https://www.instagram.com/carpinteriarubilar"
             target="_blank"
             rel="noopener noreferrer"
             className="text-gray-600 hover:text-pink-600"
           >
             <FontAwesomeIcon icon={faInstagram} className="text-xl" />
-          </a>
-
-          {/* Facebook */}
-          <a
-            href="https://www.facebook.com/profile.php?id=61568409722975&rdid=evSQkLQw3CoYc6Ax&share_url=https%3A%2F%2Fwww.facebook.com%2Fshare%2F1A4QeVXDyD%2F#"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-gray-600 hover:text-blue-600"
-          >
-            <FontAwesomeIcon icon={faFacebookF} className="text-xl" />
-          </a>
+          </a>      
        
 
           {/* Links de admin */}
@@ -89,9 +79,9 @@ export default function Navbar() {
                 <FontAwesomeIcon icon={faUser} className="text-xl" />
                 <span className="text-xs lg:text-sm ml-1">Admin Usuario</span>
               </Link>
-              <Link href="/admin/products" className="text-gray-600">
+              <Link href="/admin/trabajos/nuevo" className="text-gray-600">
                 <FontAwesomeIcon icon={faBoxes} className="text-xl" />
-                <span className="text-xs lg:text-sm ml-1">Crear Producto</span>
+                <span className="text-xs lg:text-sm ml-1">Subir Trabajo</span>
               </Link>
             </>
           )}
@@ -203,9 +193,9 @@ export default function Navbar() {
             {/* Admin */}
             {role === 'admin' && (
               <>
-                <Link href="/admin/products" onClick={closeMenu} className="block py-2 px-3 hover:bg-yellow-100 dark:hover:bg-gray-700 rounded-lg text-gray-800 dark:text-yellow-200">
+                <Link href="/admin/trabajos/nuevo" onClick={closeMenu} className="block py-2 px-3 hover:bg-yellow-100 dark:hover:bg-gray-700 rounded-lg text-gray-800 dark:text-yellow-200">
                   <FontAwesomeIcon icon={faBoxes} className="mr-2 text-lg" />
-                  Crear Producto
+                  Subir Trabajo
                 </Link>
                 <Link href="/admin" onClick={closeMenu} className="block py-2 px-3 hover:bg-yellow-100 dark:hover:bg-gray-700 rounded-lg text-gray-800 dark:text-yellow-300">
                   <FontAwesomeIcon icon={faUser} className="mr-2 text-lg" />
