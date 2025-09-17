@@ -96,12 +96,12 @@ const Footer = () => {
     <p className="mt-1">
       Creado por{' '}
       <Link
-        href="https://www.puentesdigitales.com.ar/"
+        href="https://www.tumarca.ar"
         target="_blank"
         rel="noopener noreferrer"
         className="text-blue-400 hover:underline"
       >
-        Puentes Digitales
+        TuMarca.ar
       </Link>
     </p>
   </div>
