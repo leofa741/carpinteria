@@ -25,7 +25,7 @@ export default function SearchBar() {
           placeholder="Buscar productos..."
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          className=" bg-transparent px-2 py-2 outline-none"
+          className=" bg-transparent px-2 py-2 outline-none rounded-l-full w-full text-gray-700 dark:text-gray-300"
         />
         <button type="submit" className="bg-amber-800 text-white px-4 py-2 rounded-full">
           <FontAwesomeIcon icon={faSearch} />
