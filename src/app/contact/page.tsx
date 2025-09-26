@@ -156,7 +156,7 @@ export default function Contact() {
     <p className="text-center mt-6 text-gray-600 dark:text-gray-400">
   ¿Prefieres hablar directamente? Escríbenos al{' '}
   <a href="https://wa.me/+54 294 441-2756" className="text-amber-600 dark:text-amber-400 hover:underline">
-    +54 11 5555-5555
+    +54 294 441-2756 (WhatsApp)
   </a>
 </p>
     </>
