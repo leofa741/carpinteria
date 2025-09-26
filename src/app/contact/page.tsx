@@ -18,7 +18,7 @@ export default function Contact() {
   };
 
   const isValidPhone = (phone: string) => {
-    const phoneRegex = /^[+][0-9]{1,3}[-\s]?[0-9]{6,12}$/; // Formato básico de número internacional
+    const phoneRegex = /^[+][0-9]{1,3}[-\s]?[0-9]{6,12}$/;
     return phoneRegex.test(phone);
   };
 
@@ -27,14 +27,14 @@ export default function Contact() {
     setStatus('');
     setLoading(true);
 
-    if (form.name === '' || form.email === '' || form.message === '') {
-      setStatus('Por favor, complete todos los campos requeridos.');
+    if (!form.name.trim() || !form.email.trim() || !form.message.trim()) {
+      setStatus('Por favor, completa todos los campos obligatorios.');
       setLoading(false);
       return;
     }
 
     if (form.phone && !isValidPhone(form.phone)) {
-      setStatus('Por favor, ingresa un número de teléfono válido.');
+      setStatus('Por favor, ingresa un número de teléfono válido (ej: +54 11 5555-5555).');
       setLoading(false);
       return;
     }
@@ -48,28 +48,30 @@ export default function Contact() {
 
       const data = await res.json();
       if (data.success) {
-        setStatus('Mensaje enviado con éxito.');
+        setStatus('¡Mensaje enviado con éxito! Nos pondremos en contacto contigo pronto.');
         setForm({ name: '', email: '', phone: '', asunto: '', message: '' });
       } else {
-        setStatus(data.message || 'Hubo un error al enviar el mensaje.');
+        setStatus(data.message || 'Hubo un error al enviar el mensaje. Inténtalo nuevamente.');
       }
     } catch (error) {
       console.error('Error al enviar el mensaje:', error);
-      setStatus('Error de conexión. Por favor, intenta nuevamente.');
+      setStatus('Error de conexión. Por favor, verifica tu red e intenta nuevamente.');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-white to-gray-100 px-4 py-16">
-      <div className="max-w-4xl w-full bg-white p-8 rounded-2xl shadow-lg">
-        <h2 className="text-3xl md:text-4xl font-extrabold text-center mb-8 text-gray-800">
+    <>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-white to-gray-100 dark:from-gray-900 dark:to-gray-800 px-4 py-16">
+      <div className="max-w-4xl w-full bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 transition-colors">
+        <h2 className="text-3xl md:text-4xl font-bold text-center mb-4 text-gray-900 dark:text-white">
           ¿Tienes alguna consulta?
         </h2>
-        <p className="text-center text-gray-500 mb-12">
+        <p className="text-center text-gray-600 dark:text-gray-300 mb-10">
           Completa el formulario y nos pondremos en contacto contigo lo antes posible.
         </p>
+
         <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <input
             type="text"
@@ -77,7 +79,7 @@ export default function Contact() {
             placeholder="Nombre completo*"
             value={form.name}
             onChange={handleChange}
-            className="w-full p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-yellow-400 focus:outline-none transition"
+            className="w-full p-4 bg-white dark:bg-gray-700 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-transparent focus:outline-none transition"
             required
           />
           <input
@@ -86,16 +88,16 @@ export default function Contact() {
             placeholder="Correo electrónico*"
             value={form.email}
             onChange={handleChange}
-            className="w-full p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-yellow-400 focus:outline-none transition"
+            className="w-full p-4 bg-white dark:bg-gray-700 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-transparent focus:outline-none transition"
             required
           />
           <input
             type="tel"
             id="phone"
-            placeholder="Teléfono (+54115555-5555) (opcional)"
+            placeholder="Teléfono (ej: +54 11 5555-5555) (opcional)"
             value={form.phone}
             onChange={handleChange}
-            className="w-full p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-yellow-400 focus:outline-none transition"
+            className="w-full p-4 bg-white dark:bg-gray-700 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-transparent focus:outline-none transition"
           />
           <input
             type="text"
@@ -103,26 +105,27 @@ export default function Contact() {
             placeholder="Asunto (opcional)"
             value={form.asunto}
             onChange={handleChange}
-            className="w-full p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-yellow-400 focus:outline-none transition"
+            className="w-full p-4 bg-white dark:bg-gray-700 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-transparent focus:outline-none transition"
           />
           <textarea
             id="message"
-            rows={4}
+            rows={5}
             placeholder="Escribe tu mensaje*"
             value={form.message}
             onChange={handleChange}
-            className="w-full p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-yellow-400 focus:outline-none transition md:col-span-2"
+            className="w-full p-4 bg-white dark:bg-gray-700 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-transparent focus:outline-none transition md:col-span-2"
             required
           ></textarea>
+
           <div className="md:col-span-2 flex justify-center">
             <button
               type="submit"
-              className="bg-yellow-400 text-gray-800 font-semibold py-3 px-8 rounded-sm hover:bg-yellow-500 transition-all flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
               disabled={loading}
+              className="bg-amber-600 hover:bg-amber-700 dark:bg-amber-500 dark:hover:bg-amber-600 text-white font-semibold py-3 px-8 rounded-xl shadow-md hover:shadow-lg transition-all flex items-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
             >
               {loading ? (
                 <>
-                  <svg className="animate-spin h-5 w-5 text-gray-800" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
                   </svg>
@@ -134,11 +137,14 @@ export default function Contact() {
             </button>
           </div>
         </form>
+
         {status && (
-          <div className="mt-6 text-center">
+          <div className="mt-8 text-center">
             <p
-              className={`text-sm ${
-                status.includes('éxito') ? 'text-green-600' : 'text-red-500'
+              className={`text-sm font-medium ${
+                status.includes('éxito') || status.includes('Éxito')
+                  ? 'text-green-600 dark:text-green-400'
+                  : 'text-red-600 dark:text-red-400'
               }`}
             >
               {status}
@@ -147,5 +153,12 @@ export default function Contact() {
         )}
       </div>
     </div>
+    <p className="text-center mt-6 text-gray-600 dark:text-gray-400">
+  ¿Prefieres hablar directamente? Escríbenos al{' '}
+  <a href="https://wa.me/+54 294 441-2756" className="text-amber-600 dark:text-amber-400 hover:underline">
+    +54 11 5555-5555
+  </a>
+</p>
+    </>
   );
 }

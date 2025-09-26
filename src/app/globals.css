@@ -40,3 +40,32 @@ body {
   scrollbar-width: none;
 }
 
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+@layer utilities {
+  .animate-fadeIn {
+    animation: fadeIn 0.3s ease-out;
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+}
+
+.swiper-button-next,
+.swiper-button-prev {
+  color: #d97706 !important; /* amber-600 */
+}
+.dark .swiper-button-next,
+.dark .swiper-button-prev {
+  color: #f59e0b !important; /* amber-400 */
+}
+.swiper-pagination-bullet {
+  background: #d97706 !important;
+}
+.dark .swiper-pagination-bullet {
+  background: #f59e0b !important;
+}
