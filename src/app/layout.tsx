@@ -45,7 +45,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="es">
-     <body className={`${montserrat.variable} bg-gradient-to-b from-red-500 to-white dark:from-red-900 dark:to-gray-900 text-gray-800 dark:text-yellow-200`}>
+     <body className={`${montserrat.variable} ${geistSans.variable} ${geistMono.variable} font-sans bg-[#fdfaf6] dark:bg-gray-900 transition-colors duration-300`}>
 
         <Providers>
           <header>
