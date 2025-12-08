@@ -2,9 +2,7 @@ import { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
+
   env: {
     MONGODB_CNN: process.env.MONGODB_CNN,
     JWT_SECRET: process.env.JWT_SECRET,
@@ -17,6 +15,7 @@ const nextConfig: NextConfig = {
     CLOUDINARY_API_KEY: process.env.CLOUDINARY_API_KEY,
     CLOUDINARY_API_SECRET: process.env.CLOUDINARY_API_SECRET,
   },
+
   images: {
     remotePatterns: [
       {
