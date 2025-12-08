@@ -166,6 +166,15 @@ export default function Navbar() {
           <Link href="/trabajos-realizados" className="hover:text-amber-700 dark:hover:text-amber-300 transition-colors">
             Trabajos
           </Link>
+          {/* <Link href="/carpinteria" className="hover:text-amber-700 dark:hover:text-amber-300 transition-colors">
+            Carpintería
+          </Link>
+          <Link href="/plano-carpinteria" className="hover:text-amber-700 dark:hover:text-amber-300 transition-colors">
+            Plano Carpintería
+          </Link>
+           <Link href="/plano-dxf-r12-carpinteria" className="hover:text-amber-700 dark:hover:text-amber-300 transition-colors">
+            Plano Carpintería r12
+          </Link> */}
           <Link href="/contact" className="hover:text-amber-700 dark:hover:text-amber-300 transition-colors">
             Contacto
           </Link>
