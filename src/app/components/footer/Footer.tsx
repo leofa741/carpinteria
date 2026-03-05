@@ -135,7 +135,7 @@ const Footer = () => {
 
 // Componentes auxiliares para limpiar el código principal
 
-function FooterLink({ href, children }) {
+function FooterLink({ href, children }: { href: string, children: React.ReactNode }) {
   return (
     <li>
       <Link 
