@@ -172,8 +172,8 @@ export default function AdminPage() {
 
       {/* Tabla para pantallas grandes */}
       <div className="hidden md:block overflow-x-auto">
-        <table className="min-w-full bg-white shadow-md rounded-md">
-          <thead className="bg-gray-100">
+        <table className="border-separate border-spacing-2 min-w-full bg-gray-900 shadow-md rounded-md">
+          <thead className="bg-gray-900">
             <tr>
              
               <th className="p-4 text-left text-sm">Foto</th>

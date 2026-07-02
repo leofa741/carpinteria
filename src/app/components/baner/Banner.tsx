@@ -47,8 +47,7 @@ function CarpinteriaBanner() {
         </h1>
         
         <p className="text-stone-300 text-lg md:text-xl max-w-2xl font-light leading-relaxed mb-10 border-l-2 border-amber-600 pl-6 text-left md:text-center md:border-l-0 md:pl-0">
-          Diseñamos muebles con alma patagónica. <br className="hidden md:block"/>
-          Restauración y creación en madera nativa de Bariloche.
+          Diseñamos y fabricamos muebles a medida, donde cada detalle refleja calidad, precisión y compromiso.
         </p>
 
         {/* Botones de Acción (CTA) */}
@@ -63,7 +62,7 @@ function CarpinteriaBanner() {
           </Link>
 
           <Link
-            href="/contacto"
+            href="/contact"
             className="px-8 py-4 bg-transparent border border-stone-500 text-stone-300 font-medium tracking-wide rounded-sm hover:border-white hover:text-white transition-all duration-300 backdrop-blur-sm"
           >
             Solicitar Presupuesto
