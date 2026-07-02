@@ -47,7 +47,7 @@ function CarpinteriaBanner() {
         </h1>
         
         <p className="text-stone-300 text-lg md:text-xl max-w-2xl font-light leading-relaxed mb-10 border-l-2 border-amber-600 pl-6 text-left md:text-center md:border-l-0 md:pl-0">
-          Diseñamos y fabricamos muebles a medida, donde cada detalle refleja calidad, precisión y compromiso.
+          Diseñamos y fabricamos muebles a medida, donde cada detalle refleja calidad, precisión y compromiso...
         </p>
 
         {/* Botones de Acción (CTA) */}
