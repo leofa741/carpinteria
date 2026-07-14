@@ -1,10 +1,11 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
+import Image from 'next/image';
 import Link from 'next/link';
+import { useState } from 'react';
 import Swal from 'sweetalert2';
+import { useSession } from 'next-auth/react'; // ✅ Importamos useSession
 
 interface Especificaciones {
   densidad: string;
@@ -12,7 +13,7 @@ interface Especificaciones {
   acabado: string;
 }
 
-interface MaderaData {
+export interface Madera {
   _id: string;
   nombreMadera: string;
   tituloProceso: string;
@@ -23,248 +24,158 @@ interface MaderaData {
   destacado: boolean;
 }
 
-export default function EditarMaderaForm({ initialData, id }: { initialData: MaderaData; id: string }) {
-  const router = useRouter();
-  const [loading, setLoading] = useState(false);
-  const [uploading, setUploading] = useState(false);
-  const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+export default function MaderasGrid({ 
+  maderas, 
+  onDelete 
+}: { 
+  maderas: Madera[]; 
+  onDelete?: (id: string) => Promise<{ success: boolean; error?: string }>; 
+}) {
+  const { data: session } = useSession(); // ✅ Obtenemos la sesión
+  
+  // ✅ Verificamos si es admin (ajusta 'admin' si en tu BD el rol se llama diferente)
+  const isAdmin = session?.user?.role === 'admin'; 
 
-  // Pre-cargamos el formulario con los datos existentes
-  const [form, setForm] = useState({
-    nombreMadera: initialData.nombreMadera,
-    tituloProceso: initialData.tituloProceso,
-    descripcion: initialData.descripcion,
-    videoUrl: initialData.videoUrl,
-    thumbnailUrl: initialData.thumbnailUrl,
-    densidad: initialData.especificaciones?.densidad || '',
-    usoRecomendado: initialData.especificaciones?.usoRecomendado || '',
-    acabado: initialData.especificaciones?.acabado || '',
-    destacado: initialData.destacado,
-  });
+  const [hoveredId, setHoveredId] = useState<string | null>(null);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    const { name, value, type } = e.target;
-    const checked = (e.target as HTMLInputElement).checked;
-    setForm((prev) => ({
-      ...prev,
-      [name]: type === 'checkbox' ? checked : value,
-    }));
-  };
+  const handleDelete = async (id: string, nombre: string) => {
+    const confirm = await Swal.fire({
+      title: `¿Eliminar "${nombre}"?`,
+      text: 'Esta acción no se puede deshacer.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar',
+      confirmButtonColor: '#d97706',
+      cancelButtonColor: '#78716c',
+    });
 
-  // ✅ ESTA ES LA EXACTA MISMA FUNCIÓN QUE YA TE FUNCIONA EN "NUEVO"
-  const handleFileUpload = async (file: File, type: 'video' | 'thumbnail') => {
-    setUploading(true);
-    setMessage(null);
-
-    try {
-      const formData = new FormData();
-      formData.append('file', file);
+    if (confirm.isConfirmed && onDelete) {
+      setDeletingId(id);
+      const result = await onDelete(id);
+      setDeletingId(null);
       
-      const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
-      const uploadPreset = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET;
-
-      if (!cloudName || !uploadPreset) {
-        throw new Error('Faltan las variables de entorno de Cloudinary en el archivo .env.local');
-      }
-
-      formData.append('upload_preset', uploadPreset);
-      formData.append('folder', 'carpinteria-rubilar/maderas'); 
-
-      const resourceType = type === 'video' ? 'video' : 'image';
-      const url = `https://api.cloudinary.com/v1_1/${cloudName}/${resourceType}/upload`;
-
-      const res = await fetch(url, {
-        method: 'POST',
-        body: formData,
-      });
-
-      const data = await res.json();
-
-      if (!res.ok || data.error) {
-        console.error('Respuesta completa de Cloudinary:', data);
-        throw new Error(data.error?.message || `Error HTTP: ${res.status}`);
-      }
-
-      if (data.secure_url) {
-        setForm((prev) => ({
-          ...prev,
-          [type === 'video' ? 'videoUrl' : 'thumbnailUrl']: data.secure_url,
-        }));
-        setMessage({ 
-          type: 'success', 
-          text: `✅ ${type === 'video' ? 'Video' : 'Imagen'} actualizado correctamente.` 
-        });
+      if (result.success) {
+        Swal.fire('¡Eliminado!', 'El registro ha sido eliminado correctamente.', 'success');
       } else {
-        console.error('Datos recibidos sin secure_url:', data);
-        throw new Error('La respuesta de Cloudinary no contiene secure_url');
+        Swal.fire('Error', result.error || 'No se pudo eliminar el registro.', 'error');
       }
-
-    } catch (error: any) {
-      console.error('Error detallado en handleFileUpload:', error);
-      setMessage({ 
-        type: 'error', 
-        text: `Error al subir: ${error.message}. Revisa la consola (F12) para más detalles.` 
-      });
-    } finally {
-      setUploading(false);
-    }
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    setMessage(null);
-
-    try {
-      const payload = {
-        nombreMadera: form.nombreMadera,
-        tituloProceso: form.tituloProceso,
-        descripcion: form.descripcion,
-        videoUrl: form.videoUrl,
-        thumbnailUrl: form.thumbnailUrl,
-        especificaciones: {
-          densidad: form.densidad,
-          usoRecomendado: form.usoRecomendado,
-          acabado: form.acabado,
-        },
-        destacado: form.destacado,
-      };
-
-      // Llamamos a la ruta PUT que ya creamos antes
-      const res = await fetch(`/api/maderas?id=${id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      });
-
-      if (!res.ok) throw new Error('Error al actualizar');
-
-      Swal.fire('¡Actualizado!', 'Los cambios se guardaron correctamente.', 'success');
-      
-      setTimeout(() => {
-        router.push('/maderas');
-        router.refresh();
-      }, 1500);
-
-    } catch (error) {
-      console.error(error);
-      setMessage({ type: 'error', text: 'Hubo un error al guardar. Revisá la consola.' });
-    } finally {
-      setLoading(false);
     }
   };
 
   return (
-    <>
-      <Link href="/maderas" className="text-amber-600 hover:text-amber-700 text-sm font-medium mb-6 inline-flex items-center gap-1">
-        ← Volver a la galería
-      </Link>
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      {maderas.map((madera, index) => (
+        <motion.div
+          key={madera._id}
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-50px" }}
+          transition={{ duration: 0.5, delay: index * 0.1 }}
+          className="group relative bg-white dark:bg-stone-900 rounded-2xl overflow-hidden shadow-lg border border-stone-200 dark:border-stone-800"
+          onMouseEnter={() => setHoveredId(madera._id)}
+          onMouseLeave={() => setHoveredId(null)}
+        >
+          {/* Contenedor de Video/Imagen */}
+          <div className="relative aspect-[4/3] overflow-hidden bg-stone-200">
+            <Image
+              src={madera.thumbnailUrl}
+              alt={madera.tituloProceso}
+              fill
+              className={`object-cover transition-all duration-700 ease-in-out ${
+                hoveredId === madera._id ? 'scale-105 opacity-0' : 'scale-100 opacity-100'
+              }`}
+            />
+            
+            <video
+              src={madera.videoUrl}
+              autoPlay
+              muted
+              loop
+              playsInline
+              className={`absolute inset-0 w-full h-full object-cover transition-all duration-700 ease-in-out ${
+                hoveredId === madera._id ? 'opacity-100 scale-100' : 'opacity-0 scale-105'
+              }`}
+            />
 
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="bg-white dark:bg-stone-900 rounded-2xl shadow-xl border border-stone-200 dark:border-stone-800 p-8"
-      >
-        <h1 className="text-3xl font-bold text-stone-900 dark:text-stone-100 mb-2">
-          Editar Registro de Madera
-        </h1>
-        <p className="text-stone-500 dark:text-stone-400 mb-8">
-          Modificá los datos del proceso artesanal y las especificaciones técnicas.
-        </p>
-
-        {message && (
-          <div className={`p-4 rounded-lg mb-6 text-sm ${
-            message.type === 'success' ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300' : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300'
-          }`}>
-            {message.text}
-          </div>
-        )}
-
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Sección 1: Datos Básicos */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label className="block text-sm font-medium text-stone-700 dark:text-stone-300 mb-1">Nombre de la Madera</label>
-              <input type="text" name="nombreMadera" value={form.nombreMadera} onChange={handleChange} required className="w-full px-4 py-2 rounded-lg border border-stone-300 dark:border-stone-700 bg-white dark:bg-stone-800 text-stone-900 dark:text-stone-100 focus:ring-2 focus:ring-amber-500 outline-none" />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-stone-700 dark:text-stone-300 mb-1">Título del Proceso</label>
-              <input type="text" name="tituloProceso" value={form.tituloProceso} onChange={handleChange} required className="w-full px-4 py-2 rounded-lg border border-stone-300 dark:border-stone-700 bg-white dark:bg-stone-800 text-stone-900 dark:text-stone-100 focus:ring-2 focus:ring-amber-500 outline-none" />
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-stone-700 dark:text-stone-300 mb-1">Descripción del Proceso</label>
-            <textarea name="descripcion" value={form.descripcion} onChange={handleChange} required rows={3} className="w-full px-4 py-2 rounded-lg border border-stone-300 dark:border-stone-700 bg-white dark:bg-stone-800 text-stone-900 dark:text-stone-100 focus:ring-2 focus:ring-amber-500 outline-none" />
-          </div>
-
-          {/* Sección 2: Archivos */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-6 bg-stone-100 dark:bg-stone-800/50 rounded-xl border border-dashed border-stone-300 dark:border-stone-700">
-            <div>
-              <label className="block text-sm font-medium text-stone-700 dark:text-stone-300 mb-1">Video del Proceso</label>
-              <p className="text-xs text-stone-500 mb-2 break-all truncate">URL Actual: {form.videoUrl}</p>
-              <input 
-                type="file" 
-                accept="video/mp4,video/webm" 
-                onChange={(e) => e.target.files?.[0] && handleFileUpload(e.target.files[0], 'video')} 
-                disabled={uploading} 
-                className="block w-full text-sm text-stone-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-amber-100 file:text-amber-700 hover:file:bg-amber-200 dark:file:bg-amber-900/30 dark:file:text-amber-400 disabled:opacity-50" 
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-stone-700 dark:text-stone-300 mb-1">Imagen de Portada</label>
-              <p className="text-xs text-stone-500 mb-2 break-all truncate">URL Actual: {form.thumbnailUrl}</p>
-              <input 
-                type="file" 
-                accept="image/*" 
-                onChange={(e) => e.target.files?.[0] && handleFileUpload(e.target.files[0], 'thumbnail')} 
-                disabled={uploading} 
-                className="block w-full text-sm text-stone-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-amber-100 file:text-amber-700 hover:file:bg-amber-200 dark:file:bg-amber-900/30 dark:file:text-amber-400 disabled:opacity-50" 
-              />
-            </div>
-          </div>
-
-          {/* Sección 3: Ficha Técnica */}
-          <div className="border-t border-stone-200 dark:border-stone-800 pt-6">
-            <h3 className="text-lg font-semibold text-stone-900 dark:text-stone-100 mb-4">Ficha Técnica</h3>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div>
-                <label className="block text-xs font-medium text-stone-500 dark:text-stone-400 mb-1">Densidad / Peso</label>
-                <input type="text" name="densidad" value={form.densidad} onChange={handleChange} className="w-full px-3 py-2 rounded-lg border border-stone-300 dark:border-stone-700 bg-white dark:bg-stone-800 text-sm" />
+            {madera.destacado && (
+              <div className="absolute top-4 left-4 bg-amber-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow-md z-10">
+                DESTACADO
               </div>
-              <div>
-                <label className="block text-xs font-medium text-stone-500 dark:text-stone-400 mb-1">Uso Recomendado</label>
-                <input type="text" name="usoRecomendado" value={form.usoRecomendado} onChange={handleChange} className="w-full px-3 py-2 rounded-lg border border-stone-300 dark:border-stone-700 bg-white dark:bg-stone-800 text-sm" />
-              </div>
-              <div>
-                <label className="block text-xs font-medium text-stone-500 dark:text-stone-400 mb-1">Acabado Sugerido</label>
-                <input type="text" name="acabado" value={form.acabado} onChange={handleChange} className="w-full px-3 py-2 rounded-lg border border-stone-300 dark:border-stone-700 bg-white dark:bg-stone-800 text-sm" />
-              </div>
+            )}
+
+            <div className={`absolute inset-0 bg-black/40 transition-opacity duration-500 ${
+              hoveredId === madera._id ? 'opacity-100' : 'opacity-0'
+            }`} />
+          </div>
+
+          {/* Contenido de la Card */}
+          <div className="p-6">
+            <div className="flex items-center gap-2 mb-2">
+              <span className="text-xs font-semibold tracking-wider text-amber-600 dark:text-amber-500 uppercase">
+                {madera.nombreMadera}
+              </span>
             </div>
-          </div>
+            
+            <h3 className="text-xl font-bold text-stone-900 dark:text-stone-100 mb-2">
+              {madera.tituloProceso}
+            </h3>
+            
+            <p className="text-stone-600 dark:text-stone-400 text-sm mb-4 line-clamp-2">
+              {madera.descripcion}
+            </p>
 
-          {/* Sección 4: Opciones */}
-          <div className="flex items-center gap-3 pt-4">
-            <input type="checkbox" id="destacado" name="destacado" checked={form.destacado} onChange={handleChange} className="w-5 h-5 text-amber-600 rounded border-stone-300 focus:ring-amber-500" />
-            <label htmlFor="destacado" className="text-sm font-medium text-stone-700 dark:text-stone-300">Marcar como "Destacado"</label>
-          </div>
+            <div className="border-t border-stone-200 dark:border-stone-800 pt-4 mt-4">
+              <h4 className="text-xs font-semibold text-stone-500 dark:text-stone-500 uppercase mb-2">
+                Ficha Técnica
+              </h4>
+              <ul className="text-sm text-stone-700 dark:text-stone-300 space-y-1">
+                <li className="flex justify-between">
+                  <span className="text-stone-500">Densidad:</span>
+                  <span className="font-medium">{madera.especificaciones.densidad}</span>
+                </li>
+                <li className="flex justify-between">
+                  <span className="text-stone-500">Uso:</span>
+                  <span className="font-medium">{madera.especificaciones.usoRecomendado}</span>
+                </li>
+              </ul>
+            </div>
 
-          {/* Botón de Envío */}
-          <div className="pt-6">
-            <button type="submit" disabled={loading || uploading} className="w-full md:w-auto px-8 py-3 bg-amber-600 hover:bg-amber-700 disabled:bg-amber-400 text-white font-semibold rounded-lg shadow-md transition-all duration-200 flex items-center justify-center gap-2">
-              {loading || uploading ? (
-                <>
-                  <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            {/* ✅ CONTROLES DE ADMINISTRADOR: Solo se renderizan si isAdmin es true */}
+            {isAdmin && (
+              <div className="flex flex-wrap justify-between items-center gap-2 pt-4 mt-4 border-t border-stone-200 dark:border-stone-800">
+                <Link
+                  href={`/admin/maderas/${madera._id}`}
+                  className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 text-sm font-medium flex items-center gap-1 transition-colors"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                   </svg>
-                  Guardando...
-                </>
-              ) : 'Guardar Cambios'}
-            </button>
+                  Editar
+                </Link>
+                <button
+                  onClick={() => handleDelete(madera._id, madera.nombreMadera)}
+                  disabled={deletingId === madera._id}
+                  className="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 text-sm font-medium flex items-center gap-1 transition-colors disabled:opacity-50"
+                >
+                  {deletingId === madera._id ? (
+                    <svg className="animate-spin h-4 w-4 mr-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                  ) : (
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                  )}
+                  {deletingId === madera._id ? 'Eliminando...' : 'Eliminar'}
+                </button>
+              </div>
+            )}
           </div>
-        </form>
-      </motion.div>
-    </>
+        </motion.div>
+      ))}
+    </div>
   );
 }
