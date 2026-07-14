@@ -9,6 +9,7 @@ export async function GET() {
   return NextResponse.json(trabajos);
 }
 
+
 // POST: crear un trabajo
 export async function POST(req: Request) {
   try {

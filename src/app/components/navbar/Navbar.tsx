@@ -87,8 +87,21 @@ export default function Navbar() {
                 <FontAwesomeIcon icon={faBoxes} className="text-lg" />
                 <span className="text-xs mt-1">Subir</span>
               </Link>
+
+
+              <Link
+                href="/admin/maderas/nuevo"
+                className="flex flex-col items-center text-gray-600 hover:text-amber-600 dark:text-amber-300 dark:hover:text-amber-200 transition-colors"
+              >
+                <FontAwesomeIcon icon={faBoxes} className="text-lg" />
+                <span className="text-xs mt-1">Madera</span>
+              </Link>
+
+
             </>
           )}
+
+
 
           {/* Auth */}
           {session ? (
@@ -132,6 +145,9 @@ export default function Navbar() {
           )}
         </div>
 
+
+
+
         {/* Menú móvil: íconos a la izquierda, hamburguesa a la derecha */}
         <div className="lg:hidden flex items-center space-x-4">
           <a
@@ -166,6 +182,12 @@ export default function Navbar() {
           <Link href="/trabajos-realizados" className="hover:text-amber-700 dark:hover:text-amber-300 transition-colors">
             Trabajos
           </Link>
+
+          <Link href="/maderas" className="hover:text-amber-700 dark:hover:text-amber-300 transition-colors">
+            Maderas
+          </Link>
+
+
           {/* <Link href="/carpinteria" className="hover:text-amber-700 dark:hover:text-amber-300 transition-colors">
             Carpintería
           </Link>
@@ -190,6 +212,7 @@ export default function Navbar() {
             {[
               { href: '/', label: 'Inicio' },
               { href: '/trabajos-realizados', label: 'Trabajos' },
+              { href: '/maderas', label: 'Maderas' },
               { href: '/contact', label: 'Contacto' },
             ].map((link) => (
               <Link

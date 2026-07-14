@@ -23,6 +23,7 @@ interface Trabajo {
   imagenes: string[];
 }
 
+
 export default function PortfolioPage() {
   const [trabajos, setTrabajos] = useState<Trabajo[]>([]);
   const { data: session } = useSession();
