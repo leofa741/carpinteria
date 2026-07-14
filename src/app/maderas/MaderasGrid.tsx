@@ -8,9 +8,9 @@ import { useState } from 'react';
 import Swal from 'sweetalert2';
 
 interface Especificaciones {
-  densidad: string;
-  usoRecomendado: string;
-  acabado: string;
+  densidad?: string;
+  usoRecomendado?: string;
+  acabado?: string;
 }
 
 export interface Madera {
@@ -20,8 +20,8 @@ export interface Madera {
   descripcion: string;
   videoUrl: string;
   thumbnailUrl: string;
-  especificaciones: Especificaciones;
-  destacado: boolean;
+  especificaciones?: Especificaciones; // ✅ Ahora es opcional
+  destacado?: boolean; // ✅ Ahora es opcional
 }
 
 interface MaderasGridProps {
@@ -34,13 +34,16 @@ export default function MaderasGrid({ maderas, onDelete }: MaderasGridProps) {
   const isAdmin = session?.user?.role === 'admin';
 
   const [hoveredId, setHoveredId] = useState<string | null>(null);
-  const [activeVideoId, setActiveVideoId] = useState<string | null>(null); // ✅ Nuevo estado para móvil (tap)
+  const [activeVideoId, setActiveVideoId] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+
+  // ✅ Aseguramos que maderas sea siempre un array
+  const safeMaderas = Array.isArray(maderas) ? maderas : [];
 
   const handleDelete = async (id: string, nombre: string) => {
     const confirm = await Swal.fire({
       title: `¿Eliminar "${nombre}"?`,
-      text: 'Esta acción no se puede deshacer y eliminará los archivos asociados.',
+      text: 'Esta acción no se puede deshacer.',
       icon: 'warning',
       showCancelButton: true,
       confirmButtonText: 'Sí, eliminar',
@@ -62,19 +65,17 @@ export default function MaderasGrid({ maderas, onDelete }: MaderasGridProps) {
     }
   };
 
-  // ✅ Función para alternar el video al tocar en móvil
   const toggleVideo = (id: string) => {
     if (activeVideoId === id) {
-      setActiveVideoId(null); // Si ya está activo, lo ocultamos
+      setActiveVideoId(null);
     } else {
-      setActiveVideoId(id); // Activamos este video
+      setActiveVideoId(id);
     }
   };
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-      {maderas.map((madera, index) => {
-        // ✅ Lógica unificada: el video se ve si hay hover (PC) O si está activo (Móvil)
+      {safeMaderas.map((madera, index) => {
         const isVideoVisible = hoveredId === madera._id || activeVideoId === madera._id;
 
         return (
@@ -88,35 +89,38 @@ export default function MaderasGrid({ maderas, onDelete }: MaderasGridProps) {
             onMouseEnter={() => setHoveredId(madera._id)}
             onMouseLeave={() => {
               setHoveredId(null);
-              setActiveVideoId(null); // Limpiamos al salir el mouse en PC
+              setActiveVideoId(null);
             }}
           >
-            {/* Contenedor de Video/Imagen (Clickable en móvil) */}
             <div 
               className="relative aspect-[4/3] overflow-hidden bg-stone-200 cursor-pointer"
               onClick={() => toggleVideo(madera._id)}
             >
-              <Image
-                src={madera.thumbnailUrl}
-                alt={madera.tituloProceso}
-                fill
-                className={`object-cover transition-all duration-700 ease-in-out ${
-                  isVideoVisible ? 'scale-105 opacity-0' : 'scale-100 opacity-100'
-                }`}
-              />
+              {/* ✅ Validación de thumbnailUrl para evitar crash de Next/Image */}
+              {madera.thumbnailUrl && (
+                <Image
+                  src={madera.thumbnailUrl}
+                  alt={madera.tituloProceso || 'Madera'}
+                  fill
+                  className={`object-cover transition-all duration-700 ease-in-out ${
+                    isVideoVisible ? 'scale-105 opacity-0' : 'scale-100 opacity-100'
+                  }`}
+                />
+              )}
 
-              <video
-                src={madera.videoUrl}
-                autoPlay
-                muted
-                loop
-                playsInline
-                className={`absolute inset-0 w-full h-full object-cover transition-all duration-700 ease-in-out ${
-                  isVideoVisible ? 'opacity-100 scale-100' : 'opacity-0 scale-105'
-                }`}
-              />
+              {madera.videoUrl && (
+                <video
+                  src={madera.videoUrl}
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                  className={`absolute inset-0 w-full h-full object-cover transition-all duration-700 ease-in-out ${
+                    isVideoVisible ? 'opacity-100 scale-100' : 'opacity-0 scale-105'
+                  }`}
+                />
+              )}
 
-              {/* ✅ Ícono de Play: Aparece cuando la imagen es visible (indica que se puede tocar) */}
               <div className={`absolute inset-0 flex items-center justify-center pointer-events-none transition-opacity duration-300 ${
                 isVideoVisible ? 'opacity-0' : 'opacity-100'
               }`}>
@@ -139,20 +143,19 @@ export default function MaderasGrid({ maderas, onDelete }: MaderasGridProps) {
               }`} />
             </div>
 
-            {/* Contenido de la Card */}
             <div className="p-6">
               <div className="flex items-center gap-2 mb-2">
                 <span className="text-xs font-semibold tracking-wider text-amber-600 dark:text-amber-500 uppercase">
-                  {madera.nombreMadera}
+                  {madera.nombreMadera || 'Madera'}
                 </span>
               </div>
 
               <h3 className="text-xl font-bold text-stone-900 dark:text-stone-100 mb-2">
-                {madera.tituloProceso}
+                {madera.tituloProceso || 'Proceso'}
               </h3>
 
               <p className="text-stone-600 dark:text-stone-400 text-sm mb-4 line-clamp-2">
-                {madera.descripcion}
+                {madera.descripcion || 'Sin descripción'}
               </p>
 
               <div className="border-t border-stone-200 dark:border-stone-800 pt-4 mt-4">
@@ -162,16 +165,17 @@ export default function MaderasGrid({ maderas, onDelete }: MaderasGridProps) {
                 <ul className="text-sm text-stone-700 dark:text-stone-300 space-y-1">
                   <li className="flex justify-between">
                     <span className="text-stone-500">Densidad:</span>
-                    <span className="font-medium">{madera.especificaciones.densidad}</span>
+                    {/* ✅ Encadenamiento opcional para evitar crash */}
+                    <span className="font-medium">{madera.especificaciones?.densidad || 'Consultar'}</span>
                   </li>
                   <li className="flex justify-between">
                     <span className="text-stone-500">Uso:</span>
-                    <span className="font-medium">{madera.especificaciones.usoRecomendado}</span>
+                    {/* ✅ Encadenamiento opcional para evitar crash */}
+                    <span className="font-medium">{madera.especificaciones?.usoRecomendado || 'Consultar'}</span>
                   </li>
                 </ul>
               </div>
 
-              {/* ✅ ACCIONES DE ADMINISTRADOR */}
               {isAdmin && (
                 <div className="flex flex-wrap justify-between items-center gap-2 pt-4 mt-4 border-t border-stone-200 dark:border-stone-800">
                   <Link
@@ -185,22 +189,12 @@ export default function MaderasGrid({ maderas, onDelete }: MaderasGridProps) {
                   </Link>
                   <button
                     onClick={(e) => {
-                      e.stopPropagation(); // Evita que el click se propague al contenedor del video
-                      handleDelete(madera._id, madera.nombreMadera);
+                      e.stopPropagation();
+                      handleDelete(madera._id, madera.nombreMadera || 'Registro');
                     }}
                     disabled={deletingId === madera._id}
                     className="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 text-sm font-medium flex items-center gap-1 transition-colors disabled:opacity-50"
                   >
-                    {deletingId === madera._id ? (
-                      <svg className="animate-spin h-4 w-4 mr-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                      </svg>
-                    ) : (
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                      </svg>
-                    )}
                     {deletingId === madera._id ? 'Eliminando...' : 'Eliminar'}
                   </button>
                 </div>

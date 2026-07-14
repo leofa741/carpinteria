@@ -2,10 +2,6 @@ import connectDB from '@/app/lib/mongoose';
 import MaderaProceso from '@/app/models/MaderaProceso';
 import MaderasGrid from './MaderasGrid';
 import { deleteMadera } from '@/app/actions/maderas';
-import { useSession } from 'next-auth/react';
-import { AuthContext } from '@/app/context/AuthContext';
-import { useContext } from 'react';
-
 
 export const metadata = {
   title: 'Maderas y Procesos | Carpintería Rubilar',
@@ -15,14 +11,15 @@ export const metadata = {
 async function getMaderas() {
   await connectDB();
   const maderas = await MaderaProceso.find().sort({ destacado: -1, createdAt: -1 }).lean();
+  
+  // ✅ AGREGA ESTA LÍNEA PARA VER EN LA TERMINAL CUÁNTOS REGISTROS LLEGAN
+  console.log("🔍 MADERAS ENCONTRADAS EN LA BD:", maderas.length);
+  
   return JSON.parse(JSON.stringify(maderas));
 }
 
 export default async function MaderasPage() {
   const maderas = await getMaderas();
-  
-  
-  
 
   return (
     <main className="min-h-screen bg-stone-50 dark:bg-stone-950 px-4 py-16 md:px-8">
@@ -37,7 +34,6 @@ export default async function MaderasPage() {
           </p>
         </div>
 
-        {/* Aquí pasamos las props nuevas */}
         <MaderasGrid 
           maderas={maderas}         
           onDelete={deleteMadera} 
