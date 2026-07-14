@@ -2,9 +2,10 @@ import connectDB from '@/app/lib/mongoose';
 import MaderaProceso from '@/app/models/MaderaProceso';
 import MaderasGrid from './MaderasGrid';
 import { deleteMadera } from '@/app/actions/maderas';
-// Importa tu función de sesión si usas next-auth, ej:
-// import { getServerSession } from 'next-auth';
-// import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import { useSession } from 'next-auth/react';
+import { AuthContext } from '@/app/context/AuthContext';
+import { useContext } from 'react';
+
 
 export const metadata = {
   title: 'Maderas y Procesos | Carpintería Rubilar',
@@ -20,10 +21,8 @@ async function getMaderas() {
 export default async function MaderasPage() {
   const maderas = await getMaderas();
   
-  // TODO: Reemplaza esto con tu lógica real de autenticación
-  // const session = await getServerSession(authOptions);
-  // const isAdmin = session?.user?.role === 'admin';
-  const isAdmin = true; // <-- Cámbialo a false cuando termines de probar
+  
+  
 
   return (
     <main className="min-h-screen bg-stone-50 dark:bg-stone-950 px-4 py-16 md:px-8">
@@ -40,8 +39,7 @@ export default async function MaderasPage() {
 
         {/* Aquí pasamos las props nuevas */}
         <MaderasGrid 
-          maderas={maderas} 
-          isAdmin={isAdmin} 
+          maderas={maderas}         
           onDelete={deleteMadera} 
         />
       </div>

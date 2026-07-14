@@ -3,6 +3,9 @@
 import { useEffect, useState, FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import ImageUpload from '../imageupload/ImageUpload';
+import { useSession } from 'next-auth/react';
+import LoadingSpinner from '../spiner/Spiner';
+import NotAuthorized from '../notauth/Notauthorized';
 
 interface TrabajoData {
   _id?: string;
@@ -28,6 +31,19 @@ export default function TrabajoForm({ initialData }: Props) {
 
   const UPLOAD_PRESET = 'preset';
   const CLOUD_NAME = 'dpooazdeg';
+
+
+
+  const { data: session } = useSession();
+
+  const isAdmin = session?.user?.role === 'admin';
+
+  if (loading) {
+    return <LoadingSpinner />;
+  }
+  if (!isAdmin) {
+    return <NotAuthorized />;
+  }
 
   useEffect(() => {
     if (initialData) {

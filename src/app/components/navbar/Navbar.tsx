@@ -36,6 +36,8 @@ export default function Navbar() {
   const name = session?.user?.name || userName;
   const email = session?.user?.email || userEmail;
 
+
+
   return (
     <nav className="bg-white dark:bg-gray-900 shadow-md fixed top-0 w-full z-50 border-b border-gray-200 dark:border-gray-800">
       <div className="max-w-full px-4 lg:px-16 flex items-center justify-between py-3 relative">
