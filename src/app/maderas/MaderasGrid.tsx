@@ -58,7 +58,7 @@ export default function MaderasGrid({ maderas, onDelete }: MaderasGridProps) {
       setDeletingId(null);
 
       if (result.success) {
-        Swal.fire('¡Eliminado!', 'El registro ha sido eliminado correctamente.', 'success');
+        Swal.fire('¡Eliminado!', 'El registro ha sido eliminado correctamente...', 'success');
       } else {
         Swal.fire('Error', result.error || 'No se pudo eliminar el registro.', 'error');
       }
