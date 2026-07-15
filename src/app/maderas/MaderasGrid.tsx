@@ -1,10 +1,9 @@
 'use client';
 
-import { motion } from 'framer-motion';
 import { useSession } from "next-auth/react";
 import Image from 'next/image';
 import Link from 'next/link';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Swal from 'sweetalert2';
 
 interface Especificaciones {
@@ -20,8 +19,8 @@ export interface Madera {
   descripcion: string;
   videoUrl: string;
   thumbnailUrl: string;
-  especificaciones?: Especificaciones; // ✅ Ahora es opcional
-  destacado?: boolean; // ✅ Ahora es opcional
+  especificaciones?: Especificaciones;
+  destacado?: boolean;
 }
 
 interface MaderasGridProps {
@@ -37,7 +36,12 @@ export default function MaderasGrid({ maderas, onDelete }: MaderasGridProps) {
   const [activeVideoId, setActiveVideoId] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
-  // ✅ Aseguramos que maderas sea siempre un array
+  // ✅ 1. DIAGNÓSTICO: Ver exactamente qué recibe el navegador
+  useEffect(() => {
+    console.log("🔍 DATOS RECIBIDOS EN EL CLIENTE:", maderas);
+    console.log("🔍 CANTIDAD TOTAL DE MADERAS:", Array.isArray(maderas) ? maderas.length : 0);
+  }, [maderas]);
+
   const safeMaderas = Array.isArray(maderas) ? maderas : [];
 
   const handleDelete = async (id: string, nombre: string) => {
@@ -56,36 +60,31 @@ export default function MaderasGrid({ maderas, onDelete }: MaderasGridProps) {
       setDeletingId(id);
       const result = await onDelete(id);
       setDeletingId(null);
-
       if (result.success) {
-        Swal.fire('¡Eliminado!', 'El registro ha sido eliminado correctamente...', 'success');
+        Swal.fire('¡Eliminado!', 'Registro eliminado correctamente.', 'success');
       } else {
-        Swal.fire('Error', result.error || 'No se pudo eliminar el registro.', 'error');
+        Swal.fire('Error', result.error || 'No se pudo eliminar.', 'error');
       }
     }
   };
 
   const toggleVideo = (id: string) => {
-    if (activeVideoId === id) {
-      setActiveVideoId(null);
-    } else {
-      setActiveVideoId(id);
-    }
+    setActiveVideoId(activeVideoId === id ? null : id);
   };
 
+  // ✅ 2. RENDERIZADO SEGURO: Si una card falla, no rompe las demás
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-      {safeMaderas.map((madera, index) => {
+      {safeMaderas.map((madera) => {
+        // Si falta el ID, saltamos para evitar errores de React
+        if (!madera || !madera._id) return null;
+
         const isVideoVisible = hoveredId === madera._id || activeVideoId === madera._id;
 
         return (
-          <motion.div
+          <div
             key={madera._id}
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-50px" }}
-            transition={{ duration: 0.5, delay: index * 0.1 }}
-            className="group relative bg-white dark:bg-stone-900 rounded-2xl overflow-hidden shadow-lg border border-stone-200 dark:border-stone-800"
+            className="group relative bg-white dark:bg-stone-900 rounded-2xl overflow-hidden shadow-lg border border-stone-200 dark:border-stone-800 transition-all duration-300 hover:shadow-xl"
             onMouseEnter={() => setHoveredId(madera._id)}
             onMouseLeave={() => {
               setHoveredId(null);
@@ -96,18 +95,25 @@ export default function MaderasGrid({ maderas, onDelete }: MaderasGridProps) {
               className="relative aspect-[4/3] overflow-hidden bg-stone-200 cursor-pointer"
               onClick={() => toggleVideo(madera._id)}
             >
-              {/* ✅ Validación de thumbnailUrl para evitar crash de Next/Image */}
-              {madera.thumbnailUrl && (
+              {/* Imagen con fallback seguro */}
+              {madera.thumbnailUrl ? (
                 <Image
                   src={madera.thumbnailUrl}
                   alt={madera.tituloProceso || 'Madera'}
                   fill
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                   className={`object-cover transition-all duration-700 ease-in-out ${
                     isVideoVisible ? 'scale-105 opacity-0' : 'scale-100 opacity-100'
                   }`}
+                  unoptimized // ✅ AGREGADO: Evita errores de optimización de Next.js con URLs externas
                 />
+              ) : (
+                <div className="absolute inset-0 flex items-center justify-center bg-stone-300 text-stone-500">
+                  Sin imagen
+                </div>
               )}
 
+              {/* Video con fallback seguro */}
               {madera.videoUrl && (
                 <video
                   src={madera.videoUrl}
@@ -121,6 +127,7 @@ export default function MaderasGrid({ maderas, onDelete }: MaderasGridProps) {
                 />
               )}
 
+              {/* Ícono de Play */}
               <div className={`absolute inset-0 flex items-center justify-center pointer-events-none transition-opacity duration-300 ${
                 isVideoVisible ? 'opacity-0' : 'opacity-100'
               }`}>
@@ -154,7 +161,7 @@ export default function MaderasGrid({ maderas, onDelete }: MaderasGridProps) {
                 {madera.tituloProceso || 'Proceso'}
               </h3>
 
-              <p className="text-stone-600 dark:text-stone-400 text-sm mb-4 line-clamp-2">
+              <p className="text-stone-600 dark:text-stone-400 text-sm mb-4 line-clamp-3">
                 {madera.descripcion || 'Sin descripción'}
               </p>
 
@@ -165,12 +172,10 @@ export default function MaderasGrid({ maderas, onDelete }: MaderasGridProps) {
                 <ul className="text-sm text-stone-700 dark:text-stone-300 space-y-1">
                   <li className="flex justify-between">
                     <span className="text-stone-500">Densidad:</span>
-                    {/* ✅ Encadenamiento opcional para evitar crash */}
                     <span className="font-medium">{madera.especificaciones?.densidad || 'Consultar'}</span>
                   </li>
                   <li className="flex justify-between">
                     <span className="text-stone-500">Uso:</span>
-                    {/* ✅ Encadenamiento opcional para evitar crash */}
                     <span className="font-medium">{madera.especificaciones?.usoRecomendado || 'Consultar'}</span>
                   </li>
                 </ul>
@@ -180,12 +185,9 @@ export default function MaderasGrid({ maderas, onDelete }: MaderasGridProps) {
                 <div className="flex flex-wrap justify-between items-center gap-2 pt-4 mt-4 border-t border-stone-200 dark:border-stone-800">
                   <Link
                     href={`/admin/maderas/${madera._id}`}
-                    className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 text-sm font-medium flex items-center gap-1 transition-colors"
+                    className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 text-sm font-medium flex items-center gap-1"
                   >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                    </svg>
-                    Editar
+                    ✏️ Editar
                   </Link>
                   <button
                     onClick={(e) => {
@@ -193,14 +195,14 @@ export default function MaderasGrid({ maderas, onDelete }: MaderasGridProps) {
                       handleDelete(madera._id, madera.nombreMadera || 'Registro');
                     }}
                     disabled={deletingId === madera._id}
-                    className="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 text-sm font-medium flex items-center gap-1 transition-colors disabled:opacity-50"
+                    className="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 text-sm font-medium flex items-center gap-1 disabled:opacity-50"
                   >
-                    {deletingId === madera._id ? 'Eliminando...' : 'Eliminar'}
+                    {deletingId === madera._id ? '⏳ Eliminando...' : '🗑️ Eliminar'}
                   </button>
                 </div>
               )}
             </div>
-          </motion.div>
+          </div>
         );
       })}
     </div>

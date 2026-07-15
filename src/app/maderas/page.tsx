@@ -3,6 +3,9 @@ import MaderaProceso from '@/app/models/MaderaProceso';
 import MaderasGrid from './MaderasGrid';
 import { deleteMadera } from '@/app/actions/maderas';
 
+// ✅ ESTA LÍNEA DESACTIVA EL CACHÉ DE VERCEL PARA ESTA PÁGINA
+export const dynamic = 'force-dynamic';
+
 export const metadata = {
   title: 'Maderas y Procesos | Carpintería Rubilar',
   description: 'Descubrí nuestras especies nativas, procesos artesanales y fichas técnicas para arquitectos.',
@@ -11,10 +14,6 @@ export const metadata = {
 async function getMaderas() {
   await connectDB();
   const maderas = await MaderaProceso.find().sort({ destacado: -1, createdAt: -1 }).lean();
-  
-  // ✅ AGREGA ESTA LÍNEA PARA VER EN LA TERMINAL CUÁNTOS REGISTROS LLEGAN
-  console.log("🔍 MADERAS ENCONTRADAS EN LA BD:", maderas.length);
-  
   return JSON.parse(JSON.stringify(maderas));
 }
 
