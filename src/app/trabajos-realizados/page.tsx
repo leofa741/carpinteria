@@ -14,6 +14,7 @@ import Image from 'next/image';
 import Swal from 'sweetalert2';
 import { useSession } from 'next-auth/react';
 import { AuthContext } from '../context/AuthContext';
+import LoadingSpinner from '../components/spiner/Spiner';
 
 interface Trabajo {
   _id: string;
@@ -82,7 +83,7 @@ export default function PortfolioPage() {
       {/* Grid de trabajos */}
       {trabajos.length === 0 ? (
         <div className="text-center py-16 text-gray-500 dark:text-gray-400">
-          <p>No hay trabajos disponibles en este momento.</p>
+          <LoadingSpinner />
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
