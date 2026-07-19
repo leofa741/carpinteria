@@ -58,7 +58,7 @@ export default function ProcesosGrid({ procesos, onDelete }: ProcesosGridProps) 
     };
 
     return (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
             {procesos.map((proceso) => {
                 const primerPaso = proceso.pasos?.[0];
 
@@ -67,52 +67,40 @@ export default function ProcesosGrid({ procesos, onDelete }: ProcesosGridProps) 
                         key={proceso._id}
                         className="group relative bg-white dark:bg-stone-900 rounded-2xl overflow-hidden shadow-lg border border-stone-200 dark:border-stone-800 transition-all duration-300 hover:shadow-xl hover:-translate-y-1 flex flex-col"
                     >
-                        {/* El Link cubre todo el contenido visual, pero NO los botones de admin */}
                         <Link href={`/procesos/${proceso._id}`} className="flex-grow">
                             <div className="relative aspect-[4/3] overflow-hidden bg-stone-200 dark:bg-stone-800">
                                 {primerPaso?.mediaUrl ? (
                                     primerPaso.tipoMedia === 'video' ? (
-                                        <div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-stone-800 via-stone-900 to-stone-950 text-white transition-transform duration-700 group-hover:scale-105 p-6">
-                                            {/* Icono principal de Story Time - Combinación de video + proceso */}
-                                            <div className="relative mb-4">
-                                                {/* Círculo de fondo con animación */}
-                                                <div className="absolute inset-0 bg-amber-500/20 rounded-full blur-xl animate-pulse"></div>
-
-                                                {/* Icono de video principal */}
-                                                <div className="relative bg-stone-800/80 backdrop-blur-sm p-4 rounded-2xl border border-stone-700 shadow-2xl">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                                        // ✅ Placeholder optimizado para móvil: padding y tamaños responsivos
+                                        <div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-stone-800 via-stone-900 to-stone-950 text-white transition-transform duration-700 group-hover:scale-105 p-3 md:p-6">
+                                            <div className="relative mb-2 md:mb-4">
+                                                <div className="absolute inset-0 bg-amber-500/20 rounded-full blur-lg md:blur-xl animate-pulse"></div>
+                                                <div className="relative bg-stone-800/80 backdrop-blur-sm p-3 md:p-4 rounded-xl md:rounded-2xl border border-stone-700 shadow-2xl">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 md:h-12 md:w-12 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                                                         <path strokeLinecap="round" strokeLinejoin="round" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
                                                         <path strokeLinecap="round" strokeLinejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                                     </svg>
                                                 </div>
-
-                                                {/* Badge de pasos flotante */}
-                                                <div className="absolute -top-2 -right-2 bg-amber-600 text-white text-xs font-bold px-2 py-1 rounded-lg shadow-lg flex items-center gap-1">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <div className="absolute -top-1 -right-1 md:-top-2 md:-right-2 bg-amber-600 text-white text-[10px] md:text-xs font-bold px-1.5 py-0.5 md:px-2 md:py-1 rounded-md md:rounded-lg shadow-lg flex items-center gap-1">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 md:h-3.5 md:w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                                                     </svg>
                                                     {proceso.pasos?.length || 0}
                                                 </div>
                                             </div>
 
-                                            {/* Texto principal */}
-                                            <span className="text-base font-bold text-white mb-1 tracking-wide">Story Time</span>
-                                            <span className="text-xs font-medium text-stone-400 text-center">
+                                            <span className="text-sm md:text-base font-bold text-white mb-0.5 md:mb-1 tracking-wide">Story Time</span>
+                                            <span className="text-[10px] md:text-xs font-medium text-stone-400 text-center">
                                                 {proceso.pasos?.length || 0} pasos del proceso
                                             </span>
 
-                                            {/* Línea de tiempo visual */}
-                                            <div className="flex items-center gap-1 mt-4">
-                                                {[...Array(Math.min(proceso.pasos?.length || 1, 4))].map((_, i) => (
+                                            <div className="flex items-center gap-1 mt-2 md:mt-4">
+                                                {[...Array(Math.min(proceso.pasos?.length || 1, 3))].map((_, i) => (
                                                     <div
                                                         key={i}
-                                                        className={`h-1.5 rounded-full transition-all duration-500 ${i === 0 ? 'w-6 bg-amber-500' : 'w-3 bg-stone-700'
-                                                            }`}
+                                                        className={`h-1 md:h-1.5 rounded-full transition-all duration-500 ${i === 0 ? 'w-4 md:w-6 bg-amber-500' : 'w-2 md:w-3 bg-stone-700'}`}
                                                     ></div>
                                                 ))}
-                                                {(proceso.pasos?.length || 0) > 4 && (
-                                                    <span className="text-xs text-stone-500 ml-1">+{(proceso.pasos?.length || 0) - 4}</span>
-                                                )}
                                             </div>
                                         </div>
                                     ) : (
@@ -135,13 +123,13 @@ export default function ProcesosGrid({ procesos, onDelete }: ProcesosGridProps) 
                                 )}
 
                                 {proceso.destacado && (
-                                    <div className="absolute top-4 left-4 bg-amber-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow-md z-10">
+                                    <div className="absolute top-3 left-3 md:top-4 md:left-4 bg-amber-600 text-white text-[10px] md:text-xs font-bold px-2 py-0.5 md:px-3 md:py-1 rounded-full shadow-md z-10">
                                         DESTACADO
                                     </div>
                                 )}
 
                                 <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors duration-300 flex items-center justify-center">
-                                    <span className="opacity-0 group-hover:opacity-100 bg-white/90 dark:bg-stone-900/90 text-stone-900 dark:text-stone-100 px-5 py-2.5 rounded-full font-semibold text-sm transition-all duration-300 transform translate-y-4 group-hover:translate-y-0 shadow-lg flex items-center gap-2">
+                                    <span className="opacity-0 group-hover:opacity-100 bg-white/90 dark:bg-stone-900/90 text-stone-900 dark:text-stone-100 px-4 py-2 md:px-5 md:py-2.5 rounded-full font-semibold text-xs md:text-sm transition-all duration-300 transform translate-y-4 group-hover:translate-y-0 shadow-lg flex items-center gap-2">
                                         <span>Ver Story Time</span>
                                         <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                                             <path strokeLinecap="round" strokeLinejoin="round" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
@@ -151,16 +139,16 @@ export default function ProcesosGrid({ procesos, onDelete }: ProcesosGridProps) 
                                 </div>
                             </div>
 
-                            <div className="p-6">
-                                <h3 className="text-xl font-bold text-stone-900 dark:text-stone-100 mb-2 line-clamp-1">
+                            <div className="p-4 md:p-6">
+                                <h3 className="text-lg md:text-xl font-bold text-stone-900 dark:text-stone-100 mb-2 line-clamp-1">
                                     {proceso.tituloProyecto}
                                 </h3>
-                                <p className="text-stone-600 dark:text-stone-400 text-sm line-clamp-2 mb-4">
+                                <p className="text-stone-600 dark:text-stone-400 text-xs md:text-sm line-clamp-2 mb-4">
                                     {proceso.descripcionGeneral}
                                 </p>
-                                <div className="flex items-center gap-2 text-xs font-semibold text-amber-600 dark:text-amber-500 uppercase tracking-wider border-t border-stone-100 dark:border-stone-800 pt-4">
+                                <div className="flex items-center gap-2 text-[10px] md:text-xs font-semibold text-amber-600 dark:text-amber-500 uppercase tracking-wider border-t border-stone-100 dark:border-stone-800 pt-3 md:pt-4">
                                     <span className="flex items-center gap-1">
-                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>
+                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 md:h-3.5 md:w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>
                                         {proceso.pasos?.length || 0} Pasos
                                     </span>
                                     <span>•</span>
@@ -169,22 +157,21 @@ export default function ProcesosGrid({ procesos, onDelete }: ProcesosGridProps) 
                             </div>
                         </Link>
 
-                        {/* ✅ BOTONES DE ADMIN: Solo se renderizan si isAdmin es true */}
                         {isAdmin && (
-                            <div className="flex flex-wrap justify-between items-center gap-2 px-6 pb-6 pt-2 border-t border-stone-100 dark:border-stone-800 bg-stone-50 dark:bg-stone-900/50">
+                            <div className="flex flex-wrap justify-between items-center gap-2 px-4 pb-4 md:px-6 md:pb-6 pt-2 border-t border-stone-100 dark:border-stone-800 bg-stone-50 dark:bg-stone-900/50">
                                 <Link
                                     href={`/admin/procesos/editar/${proceso._id}`}
-                                    className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 text-sm font-medium flex items-center gap-1"
+                                    className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 text-xs md:text-sm font-medium flex items-center gap-1"
                                 >
                                     ✏️ Editar
                                 </Link>
                                 <button
                                     onClick={(e) => {
-                                        e.stopPropagation(); // Evita que el clic se propague al Link padre
+                                        e.stopPropagation();
                                         handleDelete(proceso._id, proceso.tituloProyecto);
                                     }}
                                     disabled={deletingId === proceso._id}
-                                    className="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 text-sm font-medium flex items-center gap-1 disabled:opacity-50"
+                                    className="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 text-xs md:text-sm font-medium flex items-center gap-1 disabled:opacity-50"
                                 >
                                     {deletingId === proceso._id ? '⏳ Eliminando...' : '🗑️ Eliminar'}
                                 </button>
