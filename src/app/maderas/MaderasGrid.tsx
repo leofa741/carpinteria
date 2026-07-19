@@ -67,6 +67,7 @@ export default function MaderasGrid({ maderas, onDelete }: MaderasGridProps) {
       }
     }
   };
+  
 
   const toggleVideo = (id: string) => {
     setActiveVideoId(activeVideoId === id ? null : id);

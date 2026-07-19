@@ -30,9 +30,7 @@ export default function NuevaMaderaPage() {
 
     const isAdmin = session?.user?.role === 'admin';
 
-
     console.log(isAdmin)
-
 
     const [form, setForm] = useState<FormData>({
         nombreMadera: '',

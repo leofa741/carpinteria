@@ -99,6 +99,14 @@ export default function Navbar() {
                 <span className="text-xs mt-1">Madera</span>
               </Link>
 
+              <Link
+                href="/admin/procesos/nuevo"
+                className="flex flex-col items-center text-gray-600 hover:text-amber-600 dark:text-amber-300 dark:hover:text-amber-200 transition-colors"
+              >
+                <FontAwesomeIcon icon={faBoxes} className="text-lg" />
+                <span className="text-xs mt-1">Procesos</span>
+              </Link>
+
 
             </>
           )}
@@ -189,6 +197,10 @@ export default function Navbar() {
             Maderas
           </Link>
 
+          <Link href="/procesos" className="hover:text-amber-700 dark:hover:text-amber-300 transition-colors">
+            Procesos
+          </Link>
+
 
           {/* <Link href="/carpinteria" className="hover:text-amber-700 dark:hover:text-amber-300 transition-colors">
             Carpintería
@@ -215,6 +227,7 @@ export default function Navbar() {
               { href: '/', label: 'Inicio' },
               { href: '/trabajos-realizados', label: 'Trabajos' },
               { href: '/maderas', label: 'Maderas' },
+              { href: '/procesos', label: 'Procesos' },
               { href: '/contact', label: 'Contacto' },
             ].map((link) => (
               <Link

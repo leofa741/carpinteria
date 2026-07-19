@@ -7,8 +7,8 @@ import { deleteMadera } from '@/app/actions/maderas';
 export const dynamic = 'force-dynamic';
 
 export const metadata = {
-  title: 'Maderas y Procesos | Carpintería Rubilar',
-  description: 'Descubrí nuestras especies nativas, procesos artesanales y fichas técnicas para arquitectos.',
+  title: 'Maderas - Especies Nativas y Procesos Artesanales',
+  description: 'Explorá nuestras especies nativas y el proceso artesanal detrás de cada pieza. Diseñado para arquitectos y profesionales que valoran el detalle.',
 };
 
 async function getMaderas() {
